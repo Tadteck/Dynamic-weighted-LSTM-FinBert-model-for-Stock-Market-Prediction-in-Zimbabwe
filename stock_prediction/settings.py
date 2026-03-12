@@ -79,8 +79,12 @@ WSGI_APPLICATION = 'stock_prediction.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'stock_prediction_db',
+        'USER': 'postgres',
+        'PASSWORD': 'Password',
+        'HOST': 'localhost',
+        'PORT': '5433',
     }
 }
 

@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+import joblib
 from ai_services.lstm_model import LSTMModel
 from ai_services.data_preparation import prepare_training_data
 
@@ -36,5 +37,6 @@ def train_model():
         print(f"Epoch {epoch+1}, Loss: {loss.item()}")
 
     torch.save(model.state_dict(), "lstm_stock_model.pth")
+    joblib.dump(scaler, "scaler.pkl")
 
     print("Model training completed")

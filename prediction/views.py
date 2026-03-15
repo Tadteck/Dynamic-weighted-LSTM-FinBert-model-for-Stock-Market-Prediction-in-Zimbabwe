@@ -24,6 +24,9 @@ def predict_stock(request):
 
     data = []
 
+    if len(prices) < 5:
+        return Response({"error": f"Not enough historical data for {stock_symbol} (minimum 5 days required)."}, status=400)
+
     for price in prices:
         data.append([
             price.close_price,

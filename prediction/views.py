@@ -14,6 +14,11 @@ def predict_stock(request):
         stock_symbol=stock_symbol
     ).order_by('-date')[:5]
 
+    if len(prices) < 5:
+        return Response({
+            "error": "Not enough stock data to make prediction"
+        })
+
     prices = list(prices)[::-1]
 
     sentiment = FinancialNews.objects.filter(
@@ -24,13 +29,10 @@ def predict_stock(request):
 
     data = []
 
-    if len(prices) < 5:
-        return Response({"error": f"Not enough historical data for {stock_symbol} (minimum 5 days required)."}, status=400)
-
     for price in prices:
         data.append([
-            price.close_price,
-            sentiment_score
+            float(price.close_price),
+            float(sentiment_score)
         ])
 
     prediction = predict_next_price(data)

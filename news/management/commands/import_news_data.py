@@ -2,31 +2,53 @@ import pandas as pd
 from django.core.management.base import BaseCommand
 from news.models import FinancialNews
 
+# Zimbabwe-related keywords
+KEYWORDS = [
+    "Zimbabwe", "ZSE", "Harare",
+    "Econet", "Delta", "CBZ", "OK Zimbabwe", "Innscor", "seedco", "Petrotrade"
+]
+
+
+def detect_stock(headline):
+
+    headline = headline.lower()
+
+    if "econet" in headline:
+        return "ECO"
+    elif "delta" in headline:
+        return "DLTA"
+    elif "cbz" in headline:
+        return "CBZ"
+    elif "ok zimbabwe" in headline or "okz" in headline:
+        return "OKZ"
+    elif "innscor" in headline:
+        return "INN"
+    else:
+        return "ZSE"
+
 class Command(BaseCommand):
-    help = 'Import financial news dataset'
 
     def handle(self, *args, **kwargs):
 
-        df = pd.read_csv('datasets/financial_news.csv', sep='\t')
-        
-        # In case the columns are not exactly named 'Sentence' and 'Sentiment', we can fall back to positional indices or map them.
-        # But we know they are 'Sentence' and 'Sentiment' from the file.
+        try:
+            df = pd.read_csv('datasets/financial_news.csv', sep='\t', on_bad_lines='skip', encoding='utf-8')
+        except TypeError:
+            # Fallback for older pandas versions
+            df = pd.read_csv('datasets/financial_news.csv', sep='\t', error_bad_lines=False, encoding='utf-8')
 
+        from django.utils import timezone
         for _, row in df.iterrows():
-            sentiment_val = str(row.get('Sentiment', '')).strip().lower()
-            if sentiment_val == 'positive':
-                score = 1.0
-            elif sentiment_val == 'negative':
-                score = -1.0
-            else:
-                score = 0.0
-                
-            FinancialNews.objects.create(
-                stock_symbol='UNKNOWN',  # No stock symbol in the dataset
-                headline=row['Sentence'],
-                source='Internet',       # No source provided in the dataset
-                published_date='2024-01-01', # No published date provided
-                sentiment_score=score
-            )
 
-        self.stdout.write(self.style.SUCCESS('News dataset imported successfully'))
+            headline = str(row.get('Sentence', row.get('headline', '')))
+
+            # Filter only Zimbabwe-related news
+            if any(keyword.lower() in headline.lower() for keyword in KEYWORDS):
+
+                FinancialNews.objects.create(
+                    stock_symbol=detect_stock(headline),
+                    headline=headline,
+                    source=row.get('source', 'dataset'),
+                    published_date=row.get('published_date', timezone.now().date())
+                )
+
+        self.stdout.write(self.style.SUCCESS('Filtered Zimbabwe news imported'))

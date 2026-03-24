@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from stocks.models import StockPrice
 from news.models import FinancialNews
 from ai_services.prediction_service import predict_next_price
+from ai_services.dynamic_weighting import combine_predictions
 
 
 @api_view(['POST'])
@@ -25,7 +26,7 @@ def predict_stock(request):
         stock_symbol=stock_symbol
     ).order_by('-published_date').first()
 
-    sentiment_score = sentiment.sentiment_score if sentiment else 0
+    sentiment_score = sentiment.sentiment_score if (sentiment and sentiment.sentiment_score is not None) else 0
 
     data = []
 
@@ -35,9 +36,16 @@ def predict_stock(request):
             float(sentiment_score)
         ])
 
-    prediction = predict_next_price(data)
+    lstm_prediction = predict_next_price(data)
+
+    final_prediction = combine_predictions(
+        lstm_prediction,
+        sentiment_score
+    )
 
     return Response({
         "stock": stock_symbol,
-        "predicted_price": prediction
+        "lstm_prediction": lstm_prediction,
+        "sentiment_score": sentiment_score,
+        "final_prediction": final_prediction
     })

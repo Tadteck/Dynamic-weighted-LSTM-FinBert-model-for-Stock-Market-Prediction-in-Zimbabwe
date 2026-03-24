@@ -1,4 +1,7 @@
 from rest_framework import serializers
+from .models import Prediction
 
-class PredictionRequestSerializer(serializers.Serializer):
-    stock_symbol = serializers.CharField(max_length=10)
+class PredictionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Prediction
+        fields = '__all__'

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-o*@ft^n^@=1%@bz=h)fr!8lbuah1-6-z$#ea(%unmxqfa$bw#n'
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-o*@ft^n^@=1%@bz=h)fr!8lbuah1-6-z$#ea(%unmxqfa$bw#n')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'yourdomain.com']
 
 
 # Application definition
@@ -38,6 +39,8 @@ INSTALLED_APPS = [
 'django.contrib.messages',
 'django.contrib.staticfiles',
 'rest_framework',
+'corsheaders',
+'rest_framework_simplejwt',
 'stocks',
 'news',
 'prediction',
@@ -45,6 +48,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -81,7 +85,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'stock_prediction_db',
         'USER': 'postgres',
-        'PASSWORD': 'Password',
+        'PASSWORD': config('DB_PASSWORD', default='Password'),
         'HOST': 'localhost',
         'PORT': '5433',
     }
@@ -123,3 +127,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Third-party API keys
+NEWS_API_KEY = config('NEWS_API_KEY', default='')
+
+# CORS settings
+CORS_ALLOW_ALL_ORIGINS = True
+
+# REST Framework Settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}

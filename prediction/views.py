@@ -6,7 +6,7 @@ from ai_services.prediction_service import predict_next_price
 from ai_services.dynamic_weighting import combine_predictions
 from prediction.models import Prediction
 from .serializers import PredictionSerializer
-from ratelimit.decorators import ratelimit
+from django_ratelimit.decorators import ratelimit
 
 
 @ratelimit(key='ip', rate='10/m', block=True)

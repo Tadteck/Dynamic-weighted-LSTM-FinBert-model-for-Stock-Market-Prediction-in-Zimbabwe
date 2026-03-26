@@ -28,6 +28,10 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', 'yourdomain.com']
 
+RATELIMIT_USE_CACHE = 'default'
+
+SILENCED_SYSTEM_CHECKS = ['django_ratelimit.E003']
+
 
 # Application definition
 
@@ -44,6 +48,7 @@ INSTALLED_APPS = [
 'stocks',
 'news',
 'prediction',
+'django_ratelimit',
 ]
 
 MIDDLEWARE = [

@@ -43,11 +43,18 @@ def predict_stock(request):
             float(sentiment_score)
         ])
 
-    lstm_prediction = predict_next_price(data)
+    lstm_prediction = predict_next_price(data, stock_symbol)
 
     final_prediction = combine_predictions(
         lstm_prediction,
         sentiment_score
+    )
+
+    close_price = prices[-1].close_price if prices else None
+    
+    from ai_services.xai_service import generate_explanation
+    explanation = generate_explanation(
+        stock_symbol, lstm_prediction, sentiment_score, final_prediction, close_price
     )
 
     Prediction.objects.create(
@@ -61,7 +68,8 @@ def predict_stock(request):
         "stock": stock_symbol,
         "lstm_prediction": lstm_prediction,
         "sentiment_score": sentiment_score,
-        "final_prediction": final_prediction
+        "final_prediction": final_prediction,
+        "explanation": explanation
     })
 
 

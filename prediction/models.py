@@ -1,7 +1,7 @@
 from django.db import models
 
 class Prediction(models.Model):
-    stock_symbol = models.CharField(max_length=10)
+    stock_symbol = models.CharField(max_length=20)
     lstm_prediction = models.FloatField()
     sentiment_score = models.FloatField()
     final_prediction = models.FloatField()

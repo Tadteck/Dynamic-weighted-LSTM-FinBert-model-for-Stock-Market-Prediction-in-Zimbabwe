@@ -1,7 +1,7 @@
 from django.db import models
 
 class FinancialNews(models.Model):
-    stock_symbol = models.CharField(max_length=10)
+    stock_symbol = models.CharField(max_length=20)
     headline = models.TextField()
     source = models.CharField(max_length=100)
     published_date = models.DateField()

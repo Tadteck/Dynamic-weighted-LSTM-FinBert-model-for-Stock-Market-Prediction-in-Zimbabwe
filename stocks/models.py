@@ -1,7 +1,7 @@
 from django.db import models
 
 class StockPrice(models.Model):
-    stock_symbol = models.CharField(max_length=10)
+    stock_symbol = models.CharField(max_length=20)
     date = models.DateField()
     open_price = models.FloatField()
     high_price = models.FloatField()

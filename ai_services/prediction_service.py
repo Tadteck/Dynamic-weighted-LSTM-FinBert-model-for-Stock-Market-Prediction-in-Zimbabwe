@@ -4,16 +4,27 @@ import joblib
 import os
 from ai_services.lstm_model import LSTMModel
 
-model = LSTMModel()
-if os.path.exists("lstm_stock_model.pth"):
-    model.load_state_dict(torch.load("lstm_stock_model.pth"))
-model.eval()
+ML_MODELS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ML_models')
 
-scaler = None
-if os.path.exists("scaler.pkl"):
-    scaler = joblib.load("scaler.pkl")
+def predict_next_price(data, stock_symbol="ZSE:DLTA.zw"):
+    safe_symbol = stock_symbol.replace(':', '_').replace('.', '_')
+    model_path = os.path.join(ML_MODELS_DIR, f"lstm_stock_model_{safe_symbol}.pth")
+    scaler_path = os.path.join(ML_MODELS_DIR, f"scaler_{safe_symbol}.pkl")
 
-def predict_next_price(data):
+    model = LSTMModel()
+    if os.path.exists(model_path):
+        model.load_state_dict(torch.load(model_path))
+    elif os.path.exists(os.path.join(ML_MODELS_DIR, "lstm_stock_model.pth")):
+        # Fallback to general model if distinct is missing
+        model.load_state_dict(torch.load(os.path.join(ML_MODELS_DIR, "lstm_stock_model.pth")))
+    model.eval()
+
+    scaler = None
+    if os.path.exists(scaler_path):
+        scaler = joblib.load(scaler_path)
+    elif os.path.exists(os.path.join(ML_MODELS_DIR, "scaler.pkl")):
+        scaler = joblib.load(os.path.join(ML_MODELS_DIR, "scaler.pkl"))
+
     if scaler:
         # Scale the historical input data
         scaled_data = scaler.transform(data)
@@ -28,7 +39,7 @@ def predict_next_price(data):
     pred_val = float(prediction)
 
     if scaler:
-        # Inverse transform: the model outputs just the close_price, so we need a dummy array to match scaler's features (2 features: close_price, sentiment_score)
+        # Inverse transform: model outputs close_price, use dummy array to match scaler's features (2: close_price, sentiment_score)
         dummy = np.zeros((1, 2))
         dummy[0, 0] = pred_val
         inversed = scaler.inverse_transform(dummy)

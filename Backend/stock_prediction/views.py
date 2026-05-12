@@ -13,18 +13,25 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         user = None
         # Try to authenticate with username
         user = self.authenticate_user(identifier, password)
-        if not user:
-            # Try to authenticate with email
-            try:
-                user_obj = User.objects.get(email=identifier)
-                user = self.authenticate_user(user_obj.username, password)
-            except User.DoesNotExist:
-                pass
+        if user:
+            if user.is_active:
+                self.user = user
+                return {}
+            else:
+                raise serializers.ValidationError('Account is disabled')
 
-        if user and user.is_active:
-            self.user = user
-            return {}
-        else:
+        # If not, try as email
+        try:
+            user_obj = User.objects.get(email__iexact=identifier.strip())
+            user = self.authenticate_user(user_obj.username, password)
+            if user and user.is_active:
+                self.user = user
+                return {}
+            elif user and not user.is_active:
+                raise serializers.ValidationError('Account is disabled')
+            else:
+                raise serializers.ValidationError('Invalid password for this email')
+        except User.DoesNotExist:
             raise serializers.ValidationError('Invalid credentials')
 
     def authenticate_user(self, username, password):

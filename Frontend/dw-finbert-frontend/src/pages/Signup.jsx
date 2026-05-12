@@ -115,6 +115,9 @@ export default function Signup() {
             required
           />
         </div>
+
+        <div className="mb-4">
+          <label className="block text-gray-400 mb-2 text-sm">Password</label>
           <input
             type="password"
             name="password"

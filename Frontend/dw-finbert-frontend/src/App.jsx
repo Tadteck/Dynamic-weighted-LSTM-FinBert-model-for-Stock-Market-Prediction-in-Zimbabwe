@@ -47,7 +47,7 @@ function App() {
         </div>
 
         <h1 className="text-5xl md:text-7xl font-extrabold leading-[1.1] tracking-tight text-white mb-6 drop-shadow-lg">
-          Intelligent Market <br className="hidden md:block" />
+          Intelligent Stock  <br className="hidden md:block" />
           <span className="text-gradient">Forecasting Engine</span>
         </h1>
 
@@ -63,9 +63,6 @@ function App() {
             Go to Dashboard
             <ArrowRight className="group-hover:translate-x-1 transition-transform" size={20} />
           </button>
-          <Link to="/methodology" className="relative glass-card px-8 py-4 text-white text-lg font-semibold rounded-xl hover:bg-white/5 transition-all duration-300 flex items-center justify-center gap-2 border border-white/10 hover:border-white/20">
-            Read Whitepaper
-          </Link>
         </div>
       </main>
 

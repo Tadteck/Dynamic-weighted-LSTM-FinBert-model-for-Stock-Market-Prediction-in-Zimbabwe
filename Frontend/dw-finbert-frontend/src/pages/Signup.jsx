@@ -7,6 +7,7 @@ export default function Signup() {
     firstName: "",
     lastName: "",
     username: "",
+    email: "",
     password: "",
     confirmPassword: "",
   });
@@ -31,6 +32,7 @@ export default function Signup() {
     try {
       await api.post("/api/register/", {
         username: formData.username,
+        email: formData.email,
         password: formData.password,
         confirm_password: formData.confirmPassword,
         first_name: formData.firstName,
@@ -103,7 +105,16 @@ export default function Signup() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-400 mb-2 text-sm">Password</label>
+          <label className="block text-gray-400 mb-2 text-sm">Email</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none"
+            required
+          />
+        </div>
           <input
             type="password"
             name="password"

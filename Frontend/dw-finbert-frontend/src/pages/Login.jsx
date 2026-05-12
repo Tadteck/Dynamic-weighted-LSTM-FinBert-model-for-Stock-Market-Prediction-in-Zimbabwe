@@ -35,7 +35,7 @@ export default function Login() {
         <h2 className="text-2xl font-bold mb-6 text-center">Login to DW-FinBERT</h2>
         {error && <p className="text-red-400 text-sm mb-4 text-center bg-red-500/10 py-2 rounded px-2">{error}</p>}
         <div className="mb-4">
-          <label className="block text-gray-400 mb-2 text-sm">Username</label>
+          <label className="block text-gray-400 mb-2 text-sm">Email or Username</label>
           <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none" required />
         </div>
         <div className="mb-6">

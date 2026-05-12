@@ -22,12 +22,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                 pass
 
         if user and user.is_active:
-            refresh = self.get_token(user)
-            data = {
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-            }
-            return data
+            self.user = user
+            return {}
         else:
             raise serializers.ValidationError('Invalid credentials')
 

@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../api';
 
 export default function Login() {
-  const [username, setUsername] = useState('');
+  const [loginField, setLoginField] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -16,7 +16,7 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      const res = await api.post('/api/token/', { username, password });
+      const res = await api.post('/api/token/', { username: loginField, password });
       login(res.data.access, res.data.refresh);
       navigate('/dashboard');
     } catch (err) {
@@ -36,7 +36,7 @@ export default function Login() {
         {error && <p className="text-red-400 text-sm mb-4 text-center bg-red-500/10 py-2 rounded px-2">{error}</p>}
         <div className="mb-4">
           <label className="block text-gray-400 mb-2 text-sm">Email or Username</label>
-          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none" required />
+          <input type="text" value={loginField} onChange={(e) => setLoginField(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none" required />
         </div>
         <div className="mb-6">
           <label className="block text-gray-400 mb-2 text-sm">Password</label>

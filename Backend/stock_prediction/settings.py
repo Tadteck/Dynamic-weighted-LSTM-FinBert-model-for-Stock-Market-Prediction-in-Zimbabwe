@@ -1,3 +1,8 @@
+# Custom authentication backend for username or email login
+AUTHENTICATION_BACKENDS = [
+    'stock_prediction.auth_backend.UsernameOrEmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 # pyre-ignore-all-errors
 """
 Django settings for stock_prediction project.
@@ -30,9 +35,9 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'yourdomain.com']
 
-RATELIMIT_USE_CACHE = 'default'
+# RATELIMIT_USE_CACHE = 'default'
 
-SILENCED_SYSTEM_CHECKS = ['django_ratelimit.E003']
+SILENCED_SYSTEM_CHECKS = []
 
 
 # Application definition
@@ -50,7 +55,7 @@ INSTALLED_APPS = [
 'stocks',
 'news',
 'prediction',
-'django_ratelimit',
+# 'django_ratelimit',
 ]
 
 MIDDLEWARE = [
@@ -89,12 +94,8 @@ WSGI_APPLICATION = 'stock_prediction.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'stock_prediction_db',
-        'USER': 'postgres',
-        'PASSWORD': config('DB_PASSWORD', default='Password'),
-        'HOST': 'localhost',
-        'PORT': '5433',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-hot-toast';
 import api from '../api';
 
 export default function Login() {
@@ -18,12 +19,15 @@ export default function Login() {
     try {
       const res = await api.post('/api/token/', { username: loginField, password });
       login(res.data.access, res.data.refresh);
+      toast.success('Successfully logged in!');
       navigate('/dashboard');
     } catch (err) {
       if (err.response && err.response.data && err.response.data.detail) {
         setError(err.response.data.detail);
+        toast.error(err.response.data.detail);
       } else {
         setError('Invalid credentials or server unavailable.');
+        toast.error('Invalid credentials or server unavailable.');
       }
     }
     setLoading(false);
@@ -42,10 +46,10 @@ export default function Login() {
           <label className="block text-gray-400 mb-2 text-sm">Password</label>
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none" required />
         </div>
-        <button type="submit" disabled={loading} className="w-full bg-accent text-black font-bold py-2 rounded-lg hover:opacity-80 transition-opacity cursor-pointer disabled:opacity-50">
+        <button type="submit" disabled={loading} className="w-full bg-accent-neon text-black font-bold py-2 rounded-lg hover:opacity-80 transition-opacity cursor-pointer disabled:opacity-50">
           {loading ? 'Logging in...' : 'Login'}
         </button>
-        <p className="text-center mt-4 text-gray-400 text-sm">Don't have an account? <Link to="/signup" className="text-accent underline hover:opacity-80">Sign Up</Link></p>
+        <p className="text-center mt-4 text-gray-400 text-sm">Don't have an account? <Link to="/signup" className="text-accent-neon underline hover:opacity-80">Sign Up</Link></p>
       </form>
     </div>
   );

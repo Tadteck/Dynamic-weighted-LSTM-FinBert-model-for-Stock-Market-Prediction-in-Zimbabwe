@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import api from "../api";
 
 export default function Signup() {
@@ -38,13 +39,16 @@ export default function Signup() {
         first_name: formData.firstName,
         last_name: formData.lastName,
       });
+      toast.success("Successfully registered! Please log in.");
       navigate("/login");
     } catch (err) {
       if (err.response && err.response.data) {
         const backendErrors = Object.values(err.response.data).flat();
         setError(backendErrors.join(" ") || "Registration failed.");
+        toast.error(backendErrors.join(" ") || "Registration failed.");
       } else {
         setError("Registration failed. Please check your connection.");
+        toast.error("Registration failed. Please check your connection.");
       }
     }
     setLoading(false);
@@ -145,13 +149,13 @@ export default function Signup() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-accent text-black font-bold py-2 rounded-lg hover:opacity-80 transition-opacity cursor-pointer disabled:opacity-50"
+          className="w-full bg-accent-neon text-black font-bold py-2 rounded-lg hover:opacity-80 transition-opacity cursor-pointer disabled:opacity-50"
         >
           {loading ? "Registering..." : "Register"}
         </button>
         <p className="text-center mt-4 text-gray-400 text-sm">
           Already a member?{" "}
-          <Link to="/login" className="text-accent underline hover:opacity-80">
+          <Link to="/login" className="text-accent-neon underline hover:opacity-80">
             Login
           </Link>
         </p>

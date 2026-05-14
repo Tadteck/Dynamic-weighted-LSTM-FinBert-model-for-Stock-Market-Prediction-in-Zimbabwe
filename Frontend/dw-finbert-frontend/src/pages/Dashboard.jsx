@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchStocks, fetchNews, fetchPredictions } from '../api';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, ReferenceLine, ComposedChart } from 'recharts';
 import { MapPin, MessageSquare, Menu, Settings, Plus, LayoutDashboard, Search, Bell } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const MOCK_CHART_DATA = [
   { time: 'Jan 12', price: 100, forecast: null },
@@ -51,6 +52,21 @@ export default function Dashboard() {
   const [selectedSymbol, setSelectedSymbol] = useState(null);
   const [chartData, setChartData] = useState(MOCK_CHART_DATA);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const prevPredictionsRef = useRef();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (!searchTerm) return;
+    const term = searchTerm.toLowerCase();
+    const found = predictions.find(p => p.stock_symbol.toLowerCase().includes(term) || (p.name && p.name.toLowerCase().includes(term)));
+    if (found) {
+      setSelectedSymbol(found.stock_symbol);
+      setSearchTerm('');
+    } else {
+      toast.error(`No company found matching "${searchTerm}"`);
+    }
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -88,6 +104,28 @@ export default function Dashboard() {
     if (Array.isArray(predsData) && predsData.length > 0) {
       setPredictions(predsData);
       if (!selectedSymbol) setSelectedSymbol(predsData[0].stock_symbol);
+      
+      // Notifications logic
+      if (prevPredictionsRef.current) {
+        predsData.forEach(newPred => {
+          const oldPred = prevPredictionsRef.current.find(p => p.stock_symbol === newPred.stock_symbol);
+          if (oldPred && oldPred.final_prediction !== newPred.final_prediction) {
+            if (newPred.stock_symbol === selectedSymbol || !selectedSymbol) {
+               toast(`Prediction for ${newPred.name || newPred.stock_symbol} updated to ${newPred.final_prediction.toFixed(2)} ZiG`, {
+                 icon: '📈',
+                 style: {
+                   borderRadius: '10px',
+                   background: '#0f172a',
+                   color: '#fff',
+                   border: '1px solid rgba(16,185,129,0.3)',
+                 },
+               });
+            }
+          }
+        });
+      }
+      prevPredictionsRef.current = predsData;
+
     } else {
       const fallbackPredictions = [
         { stock_symbol: 'ZSE:DLTA.zw', name: 'Delta Corp', lstm_prediction: 24.50, sentiment_score: 0.82, final_prediction: 25.80 },
@@ -128,17 +166,17 @@ export default function Dashboard() {
         </div>
         
         <div className="flex items-center gap-6">
-           <div className="hidden md:flex bg-white/5 border border-white/10 rounded-full px-4 py-1.5 items-center gap-2">
+           <form onSubmit={handleSearch} className="hidden md:flex bg-white/5 border border-white/10 rounded-full px-4 py-1.5 items-center gap-2">
              <Search size={14} className="text-slate-400" />
-             <input type="text" placeholder="Search SYMBOL..." className="bg-transparent border-none text-sm text-white placeholder-slate-500 focus:outline-none w-32" />
-           </div>
+             <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search SYMBOL..." className="bg-transparent border-none text-sm text-white placeholder-slate-500 focus:outline-none w-32" />
+           </form>
            
            <div className="flex items-center gap-4 text-slate-400">
              <button className="hover:text-accent-neon transition-colors relative">
                <Bell size={20} />
                <span className="absolute top-0 right-0 w-2 h-2 bg-accent-neon rounded-full animate-pulse"></span>
              </button>
-             <button className="hover:text-white transition-colors"><Settings size={20} /></button>
+             <button onClick={() => navigate('/settings')} className="hover:text-white transition-colors"><Settings size={20} /></button>
              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-accent-blue to-accent-purple border border-white/20"></div>
            </div>
         </div>

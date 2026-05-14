@@ -7,8 +7,10 @@ import Signup from "./pages/Signup.jsx";
 import Methodology from "./pages/Methodology.jsx";
 import ZseData from "./pages/ZseData.jsx";
 import Company from "./pages/Company.jsx";
+import Settings from "./pages/Settings.jsx";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
+import { Toaster } from "react-hot-toast";
 import "./index.css";
 
 const ProtectedRoute = ({ children }) => {
@@ -22,6 +24,7 @@ const ProtectedRoute = ({ children }) => {
 ReactDOM.createRoot(document.getElementById("root")).render(
   <AuthProvider>
     <BrowserRouter>
+      <Toaster position="top-center" reverseOrder={false} />
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/login" element={<Login />} />
@@ -30,6 +33,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/zse-data" element={<ZseData />} />
         <Route path="/company" element={<Company />} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   </AuthProvider>
